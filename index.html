@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Restaurant Menu & Billing</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🍽️ Restaurant Menu</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="managerBtn">Manager</button>
+                <button class="btn btn-primary" id="cartBtn">
+                    Cart (<span id="cartCount">0</span>)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Customer View -->
+        <div id="customerView" class="view">
+            <div class="container">
+                <div class="main-page-layout">
+                    <div class="menu-section">
+                        <h2 class="section-title">Our Menu</h2>
+                        <div id="menuGrid" class="menu-grid">
+                            <!-- Menu items will be dynamically loaded here -->
+                        </div>
+                    </div>
+                    <div class="cart-summary-widget">
+                        <div class="cart-widget-header">
+                            <h3>🛒 Your Cart</h3>
+                            <button class="btn btn-sm btn-secondary" id="toggleCartWidgetBtn">View Full Cart</button>
+                        </div>
+                        <div id="cartSummaryContent" class="cart-summary-content">
+                            <p class="empty-cart-message">Your cart is empty</p>
+                        </div>
+                        <div class="cart-widget-footer">
+                            <div class="cart-widget-total">
+                                <strong>Total: €<span id="cartWidgetTotal">0</span></strong>
+                            </div>
+                            <div class="cart-widget-actions">
+                                <button class="btn btn-danger btn-sm" id="clearCartWidgetBtn" disabled>Clear Cart</button>
+                                <button class="btn btn-primary btn-sm" id="checkoutFromWidgetBtn" disabled>Checkout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manager View -->
+        <div id="managerView" class="view hidden">
+            <div class="container">
+                <div class="manager-header">
+                    <h2>Manager Dashboard</h2>
+                    <button class="btn btn-secondary" id="backToCustomerBtn">Back to Menu</button>
+                </div>
+                
+                <div class="manager-tabs">
+                    <button class="tab-btn active" data-tab="menu-management">Menu Management</button>
+                    <button class="tab-btn" data-tab="manager-cart">Cart</button>
+                    <button class="tab-btn" data-tab="sales-report">Sales Report</button>
+                    <button class="tab-btn" data-tab="invoice-history">Invoice History</button>
+                </div>
+
+                <!-- Menu Management Tab -->
+                <div id="menu-management" class="tab-content active">
+                    <div class="section-header">
+                        <h3>Manage Menu Items</h3>
+                        <button class="btn btn-primary" id="addMenuItemBtn">+ Add Menu Item</button>
+                    </div>
+                    <div id="managerMenuGrid" class="menu-grid">
+                        <!-- Manager menu items will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Manager Cart Tab -->
+                <div id="manager-cart" class="tab-content">
+                    <div class="section-header">
+                        <h3>Current Cart</h3>
+                        <div class="cart-actions-header">
+                            <button class="btn btn-secondary" id="managerClearCartBtn">Clear Cart</button>
+                            <button class="btn btn-primary" id="managerPrintCartBtn">Print Cart</button>
+                        </div>
+                    </div>
+                    <div id="managerCartContent" class="manager-cart-content">
+                        <!-- Cart items will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Sales Report Tab -->
+                <div id="sales-report" class="tab-content">
+                    <div class="section-header">
+                        <h3>Monthly Sales Report</h3>
+                        <div class="report-filters">
+                            <select id="reportMonth" class="select-input">
+                                <option value="">Select Month</option>
+                            </select>
+                            <select id="reportYear" class="select-input">
+                                <option value="">Select Year</option>
+                            </select>
+                            <button class="btn btn-primary" id="generateReportBtn">Generate Report</button>
+                        </div>
+                    </div>
+                    <div id="salesReportContent" class="report-content">
+                        <p class="placeholder-text">Select month and year to generate sales report</p>
+                    </div>
+                </div>
+
+                <!-- Invoice History Tab -->
+                <div id="invoice-history" class="tab-content">
+                    <div class="section-header">
+                        <h3>Invoice History</h3>
+                    </div>
+                    <div id="invoiceHistoryContent" class="invoice-history">
+                        <!-- Invoice history will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="cartSidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Shopping Cart</h2>
+            <button class="close-btn" id="closeCartBtn">&times;</button>
+        </div>
+        <div id="cartItems" class="cart-items">
+            <p class="empty-cart">Your cart is empty</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Total: €<span id="cartTotal">0</span></strong>
+            </div>
+            <div class="cart-actions">
+                <button class="btn btn-secondary" id="clearCartBtn">Clear Cart</button>
+                <button class="btn btn-primary" id="checkoutBtn">Checkout</button>
+            </div>
+        </div>
+    </div>
+    <div id="cartOverlay" class="overlay"></div>
+
+    <!-- Add/Edit Menu Item Modal -->
+    <div id="menuItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Menu Item</h2>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="menuItemForm">
+                <input type="hidden" id="menuItemId">
+                <div class="form-group">
+                    <label for="itemName">Item Name</label>
+                    <input type="text" id="itemName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemPrice">Price (€)</label>
+                    <input type="number" id="itemPrice" class="form-input" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemImage">Image URL</label>
+                    <input type="url" id="itemImage" class="form-input" placeholder="https://images.unsplash.com/photo-..." required>
+                    <small class="form-help-text">
+                        Use image URLs from: 
+                        <a href="https://unsplash.com" target="_blank">Unsplash</a>, 
+                        <a href="https://pexels.com" target="_blank">Pexels</a>, or 
+                        <a href="https://pixabay.com" target="_blank">Pixabay</a>
+                    </small>
+                    <div class="image-preview-container">
+                        <div id="imagePreview" class="image-preview">
+                            <p class="preview-placeholder">Image preview will appear here</p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" id="generateImageBtn">Generate Sample Image</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="itemDescription">Description</label>
+                    <textarea id="itemDescription" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invoice Modal -->
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content invoice-modal">
+            <div class="modal-header">
+                <h2>Invoice</h2>
+                <button class="close-btn" id="closeInvoiceBtn">&times;</button>
+            </div>
+            <div id="invoiceContent" class="invoice-content">
+                <!-- Invoice content will be generated here -->
+            </div>
+            <div class="invoice-actions">
+                <button class="btn btn-primary" id="payBtn">Pay</button>
+                <button class="btn btn-secondary" id="printInvoiceBtn">Print Bill</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment QR Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content payment-modal">
+            <div class="modal-header">
+                <h2>Payment</h2>
+                <button class="close-btn" id="closePaymentBtn">&times;</button>
+            </div>
+            <div class="payment-content">
+                <p class="payment-amount">Amount: €<span id="paymentAmount">0</span></p>
+                <div id="qrcode" class="qrcode-container"></div>
+                <p class="payment-instruction">Scan QR code to complete payment</p>
+                <div class="payment-actions">
+                    <button class="btn btn-secondary" id="printQRBtn">Print QR Code</button>
+                    <button class="btn btn-primary" id="paymentCompleteBtn">Payment Complete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Cart Button -->
+    <button id="floatingCartBtn" class="floating-cart-btn" title="View Cart">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-badge" id="floatingCartCount">0</span>
+    </button>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
