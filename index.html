@@ -1,245 +1,176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Restaurant Menu & Billing</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<title>Expense & Investment Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  input, select, button { margin: 5px; padding: 5px; }
+  table { border-collapse: collapse; margin-top: 10px; width: 100%; }
+  th, td { border: 1px solid black; padding: 5px; text-align: center; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .tabs button.active { font-weight: bold; }
+  .controls { margin-bottom: 10px; }
+</style>
 </head>
+
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <h1 class="logo">🍽️ Restaurant Menu</h1>
-            <div class="header-actions">
-                <button class="btn btn-secondary" id="managerBtn">Manager</button>
-                <button class="btn btn-primary" id="cartBtn">
-                    Cart (<span id="cartCount">0</span>)
-                </button>
-            </div>
-        </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Customer View -->
-        <div id="customerView" class="view">
-            <div class="container">
-                <div class="main-page-layout">
-                    <div class="menu-section">
-                        <h2 class="section-title">Our Menu</h2>
-                        <div id="menuGrid" class="menu-grid">
-                            <!-- Menu items will be dynamically loaded here -->
-                        </div>
-                    </div>
-                    <div class="cart-summary-widget">
-                        <div class="cart-widget-header">
-                            <h3>🛒 Your Cart</h3>
-                            <button class="btn btn-sm btn-secondary" id="toggleCartWidgetBtn">View Full Cart</button>
-                        </div>
-                        <div id="cartSummaryContent" class="cart-summary-content">
-                            <p class="empty-cart-message">Your cart is empty</p>
-                        </div>
-                        <div class="cart-widget-footer">
-                            <div class="cart-widget-total">
-                                <strong>Total: €<span id="cartWidgetTotal">0</span></strong>
-                            </div>
-                            <div class="cart-widget-actions">
-                                <button class="btn btn-danger btn-sm" id="clearCartWidgetBtn" disabled>Clear Cart</button>
-                                <button class="btn btn-primary btn-sm" id="checkoutFromWidgetBtn" disabled>Checkout</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<h1>Expense & Investment Tracker</h1>
 
-        <!-- Manager View -->
-        <div id="managerView" class="view hidden">
-            <div class="container">
-                <div class="manager-header">
-                    <h2>Manager Dashboard</h2>
-                    <button class="btn btn-secondary" id="backToCustomerBtn">Back to Menu</button>
-                </div>
-                
-                <div class="manager-tabs">
-                    <button class="tab-btn active" data-tab="menu-management">Menu Management</button>
-                    <button class="tab-btn" data-tab="manager-cart">Cart</button>
-                    <button class="tab-btn" data-tab="sales-report">Sales Report</button>
-                    <button class="tab-btn" data-tab="invoice-history">Invoice History</button>
-                </div>
+<!-- AUTH -->
+<div id="authBox">
+  <h2>Connexion / Inscription</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Mot de passe">
+  <br>
+  <button id="login">Connexion</button>
+  <button id="register">Créer un compte</button>
+</div>
 
-                <!-- Menu Management Tab -->
-                <div id="menu-management" class="tab-content active">
-                    <div class="section-header">
-                        <h3>Manage Menu Items</h3>
-                        <button class="btn btn-primary" id="addMenuItemBtn">+ Add Menu Item</button>
-                    </div>
-                    <div id="managerMenuGrid" class="menu-grid">
-                        <!-- Manager menu items will be loaded here -->
-                    </div>
-                </div>
+<!-- APP -->
+<div id="appBox" style="display:none;">
 
-                <!-- Manager Cart Tab -->
-                <div id="manager-cart" class="tab-content">
-                    <div class="section-header">
-                        <h3>Current Cart</h3>
-                        <div class="cart-actions-header">
-                            <button class="btn btn-secondary" id="managerClearCartBtn">Clear Cart</button>
-                            <button class="btn btn-primary" id="managerPrintCartBtn">Print Cart</button>
-                        </div>
-                    </div>
-                    <div id="managerCartContent" class="manager-cart-content">
-                        <!-- Cart items will be displayed here -->
-                    </div>
-                </div>
+  <div class="controls">
+    <button id="export-csv-btn">Exporter CSV</button>
+    <button id="logout">Déconnexion</button>
+  </div>
 
-                <!-- Sales Report Tab -->
-                <div id="sales-report" class="tab-content">
-                    <div class="section-header">
-                        <h3>Monthly Sales Report</h3>
-                        <div class="report-filters">
-                            <select id="reportMonth" class="select-input">
-                                <option value="">Select Month</option>
-                            </select>
-                            <select id="reportYear" class="select-input">
-                                <option value="">Select Year</option>
-                            </select>
-                            <button class="btn btn-primary" id="generateReportBtn">Generate Report</button>
-                        </div>
-                    </div>
-                    <div id="salesReportContent" class="report-content">
-                        <p class="placeholder-text">Select month and year to generate sales report</p>
-                    </div>
-                </div>
+  <!-- TABS -->
+  <div class="tabs">
+    <button id="tab-transactions" class="active">Transactions</button>
+    <button id="tab-investments">Investments</button>
+    <button id="tab-charts">Charts</button>
+  </div>
 
-                <!-- Invoice History Tab -->
-                <div id="invoice-history" class="tab-content">
-                    <div class="section-header">
-                        <h3>Invoice History</h3>
-                    </div>
-                    <div id="invoiceHistoryContent" class="invoice-history">
-                        <!-- Invoice history will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+  <!-- TRANSACTIONS -->
+  <div id="transactions-tab" class="tab-content active">
+    <h2>Ajouter une transaction</h2>
 
-    <!-- Shopping Cart Sidebar -->
-    <div id="cartSidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h2>Shopping Cart</h2>
-            <button class="close-btn" id="closeCartBtn">&times;</button>
-        </div>
-        <div id="cartItems" class="cart-items">
-            <p class="empty-cart">Your cart is empty</p>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                <strong>Total: €<span id="cartTotal">0</span></strong>
-            </div>
-            <div class="cart-actions">
-                <button class="btn btn-secondary" id="clearCartBtn">Clear Cart</button>
-                <button class="btn btn-primary" id="checkoutBtn">Checkout</button>
-            </div>
-        </div>
-    </div>
-    <div id="cartOverlay" class="overlay"></div>
+    <form id="transaction-form">
+      <input type="text" id="name" placeholder="Nom" required>
+      <input type="number" id="amount" placeholder="Montant" step="0.01" required>
 
-    <!-- Add/Edit Menu Item Modal -->
-    <div id="menuItemModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Add Menu Item</h2>
-                <button class="close-btn" id="closeModalBtn">&times;</button>
-            </div>
-            <form id="menuItemForm">
-                <input type="hidden" id="menuItemId">
-                <div class="form-group">
-                    <label for="itemName">Item Name</label>
-                    <input type="text" id="itemName" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="itemPrice">Price (€)</label>
-                    <input type="number" id="itemPrice" class="form-input" min="0" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="itemImage">Image URL</label>
-                    <input type="url" id="itemImage" class="form-input" placeholder="https://images.unsplash.com/photo-..." required>
-                    <small class="form-help-text">
-                        Use image URLs from: 
-                        <a href="https://unsplash.com" target="_blank">Unsplash</a>, 
-                        <a href="https://pexels.com" target="_blank">Pexels</a>, or 
-                        <a href="https://pixabay.com" target="_blank">Pixabay</a>
-                    </small>
-                    <div class="image-preview-container">
-                        <div id="imagePreview" class="image-preview">
-                            <p class="preview-placeholder">Image preview will appear here</p>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-secondary" id="generateImageBtn">Generate Sample Image</button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="itemDescription">Description</label>
-                    <textarea id="itemDescription" class="form-input" rows="3"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
+      <select id="type" required>
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
 
-    <!-- Invoice Modal -->
-    <div id="invoiceModal" class="modal">
-        <div class="modal-content invoice-modal">
-            <div class="modal-header">
-                <h2>Invoice</h2>
-                <button class="close-btn" id="closeInvoiceBtn">&times;</button>
-            </div>
-            <div id="invoiceContent" class="invoice-content">
-                <!-- Invoice content will be generated here -->
-            </div>
-            <div class="invoice-actions">
-                <button class="btn btn-primary" id="payBtn">Pay</button>
-                <button class="btn btn-secondary" id="printInvoiceBtn">Print Bill</button>
-            </div>
-        </div>
-    </div>
+      <select id="category" required>
+        <option value="">-- Category --</option>
+        <option value="Salary">Salary</option>
+        <option value="Food">Food</option>
+        <option value="Rent">Rent</option>
+        <option value="Transport">Transport</option>
+        <option value="Other">Other</option>
+      </select>
 
-    <!-- Payment QR Modal -->
-    <div id="paymentModal" class="modal">
-        <div class="modal-content payment-modal">
-            <div class="modal-header">
-                <h2>Payment</h2>
-                <button class="close-btn" id="closePaymentBtn">&times;</button>
-            </div>
-            <div class="payment-content">
-                <p class="payment-amount">Amount: €<span id="paymentAmount">0</span></p>
-                <div id="qrcode" class="qrcode-container"></div>
-                <p class="payment-instruction">Scan QR code to complete payment</p>
-                <div class="payment-actions">
-                    <button class="btn btn-secondary" id="printQRBtn">Print QR Code</button>
-                    <button class="btn btn-primary" id="paymentCompleteBtn">Payment Complete</button>
-                </div>
-            </div>
-        </div>
-    </div>
+      <input type="date" id="date" required>
 
-    <!-- Floating Cart Button -->
-    <button id="floatingCartBtn" class="floating-cart-btn" title="View Cart">
-        <span class="cart-icon">🛒</span>
-        <span class="cart-badge" id="floatingCartCount">0</span>
-    </button>
+      <select id="currency">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="GBP">GBP</option>
+      </select>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
+      <button type="submit">Ajouter</button>
+    </form>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    <script src="script.js"></script>
+    <table id="transaction-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Montant</th>
+          <th>Type</th>
+          <th>Catégorie</th>
+          <th>Date</th>
+          <th>Devise</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- INVESTMENTS -->
+  <div id="investments-tab" class="tab-content">
+    <h2>Ajouter un investissement</h2>
+
+    <form id="investment-form">
+      <input type="text" id="inv-name" placeholder="Nom" required>
+      <input type="number" id="inv-amount" placeholder="Principal" step="0.01" required>
+
+      <select id="inv-category">
+        <option value="Stocks">Stocks</option>
+        <option value="Crypto">Crypto</option>
+        <option value="Real Estate">Real Estate</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <input type="number" id="inv-interest" placeholder="Interest % / month" step="0.01" required>
+      <input type="date" id="inv-date" required>
+
+      <select id="inv-currency">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+      </select>
+
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <table id="investment-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Principal</th>
+          <th>Interest %</th>
+          <th>Devise</th>
+          <th>Date début</th>
+          <th>Interest cumulé</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h3>Ajouter intérêt mensuel</h3>
+    <select id="select-investment"></select>
+    <input type="month" id="interest-date">
+    <input type="number" id="interest-amount" placeholder="Montant intérêt">
+    <button id="add-monthly-interest">Ajouter intérêt</button>
+  </div>
+
+  <!-- CHARTS -->
+  <div id="charts-tab" class="tab-content">
+    <canvas id="overviewChart" height="200"></canvas>
+  </div>
+
+</div>
+
+<!-- Firebase init -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  /* TA CONFIG FIREBASE */
+     apiKey: "AIzaSyChlTQgk-BvdNf8jRskBY-kos_kCeQIWW0",
+  authDomain: "expense-traker-247d1.firebaseapp.com",
+  projectId: "expense-traker-247d1",
+  storageBucket: "expense-traker-247d1.firebasestorage.app",
+  messagingSenderId: "1083688124128",
+  appId: "1:1083688124128:web:4e5c5c0313c5c8fe3cda85",
+  measurementId: "G-W0XV7P2X2H"
+};
+
+const app = initializeApp(firebaseConfig);
+window.auth = getAuth(app);
+</script>
+
+<script type="module" src="script.js"></script>
+
 </body>
 </html>
-
