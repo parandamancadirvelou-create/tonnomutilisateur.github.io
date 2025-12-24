@@ -1371,3 +1371,24 @@ window.handleImageError = handleImageError;
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
 
+
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+loginBtn.onclick = async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  if (!email || !password) { alert("Email et mot de passe requis"); return; }
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch(e) { alert(e.message); }
+};
+
+registerBtn.onclick = async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  if (!email || !password) { alert("Email et mot de passe requis"); return; }
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+  } catch(e) { alert(e.message); }
+};
